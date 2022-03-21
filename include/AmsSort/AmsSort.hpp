@@ -184,8 +184,8 @@ void sort(MPI_Datatype mpi_type, std::vector<T>& data,
  * @param use_two_tree Use 2-tree collective operations from the RBC
  *   library instead of naive binomial tree collectives. Default = true.
  */
-template <class T, class Comp = std::less<T> , class AmsTags = Ams::Tags<>>
-void sortLevel(MPI_Datatype mpi_type, std::vector<T>& data, int l,
+template <class T, class A, class Comp = std::less<T> , class AmsTags = Ams::Tags<>>
+void sortLevel(MPI_Datatype mpi_type, std::vector<T, A>& data, int l,
                std::mt19937_64& async_gen,
                MPI_Comm comm,
                Comp comp = Comp(),
@@ -342,8 +342,8 @@ void sort(MPI_Datatype mpi_type, std::vector<T>& data,
  * @param use_two_tree Use 2-tree collective operations from the RBC
  *   library instead of naive binomial tree collectives. Default = true.
  */
-template <class T, class Comp = std::less<T> , class AmsTags = Ams::Tags<> >
-void sortLevel(MPI_Datatype mpi_type, std::vector<T>& data, int l,
+template <class T, class A, class Comp = std::less<T> , class AmsTags = Ams::Tags<> >
+void sortLevel(MPI_Datatype mpi_type, std::vector<T, A>& data, int l,
                std::mt19937_64& async_gen,
                const RBC::Comm& comm,
                Comp comp = Comp(),

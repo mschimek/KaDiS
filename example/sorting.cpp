@@ -38,6 +38,32 @@
 
 #define PRINT_ROOT(msg) if (rank == 0) std::cout << msg << std::endl;
 
+template <typename T, typename Alloc = std::allocator<T>>
+class default_init_allocator : public Alloc {
+  using a_t = std::allocator_traits<Alloc>;
+
+public:
+  // obtain alloc<U> where U ≠ T
+  template <typename U> struct rebind {
+    using other =
+        default_init_allocator<U, typename a_t::template rebind_alloc<U>>;
+  };
+  // make inherited ctors visible
+  using Alloc::Alloc;
+  // default-construct objects
+  template <typename U>
+  void construct(U* ptr) noexcept(
+      std::is_nothrow_default_constructible<U>::value) { // 'placement new':
+    ::new (static_cast<void*>(ptr)) U;
+  }
+  // construct with ctor arguments
+  template <typename U, typename... Args>
+  void construct(U* ptr, Args&&... args) {
+    a_t::construct(static_cast<Alloc&>(*this), ptr,
+                   std::forward<Args>(args)...);
+  }
+};
+
 std::mt19937_64 createGen(int rank) {
   std::mt19937_64 gen;
   int data_seed = 3469931 + rank;
@@ -48,7 +74,7 @@ std::mt19937_64 createGen(int rank) {
 std::vector<double> createData(std::mt19937_64* gen) {
   std::uniform_real_distribution<double> dist(-100.0, 100.0);
   std::vector<double> data;
-  for (int i = 0; i < 10; ++i) {
+  for (int i = 0; i < 10000; ++i) {
     data.push_back(dist(*gen));
   }
   return data;
@@ -92,7 +118,7 @@ int main(int argc, char** argv) {
 
   PRINT_ROOT("Start sorting algorithm AMS-sort with RBC::Comm.");
   data = createData(&gen);
-  std::vector<MyStruct> str;
+  std::vector<MyStruct, default_init_allocator<MyStruct>> str;
   for (const auto& d : data) str.emplace_back(d);
   auto mycomp = [](const MyStruct& l, const MyStruct&r) {
 		  return l.v < r.v;

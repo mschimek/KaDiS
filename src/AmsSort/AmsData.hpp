@@ -138,11 +138,12 @@ struct Config {
   const DistributionStrategy distr_strategy;
 };
 
-template <class AmsTags, class value_type, class Config, class Comp>
+template <class AmsTags, class value_type, class allocator_type, class Config, class Comp>
 class AmsData {
  public:
   using Tags = AmsTags;
   using T = value_type;
+  using Allocator = allocator_type;
 
   // Make class non-copyable.
   AmsData() = delete;
@@ -154,8 +155,8 @@ class AmsData {
           MPI_Datatype mpi_type,
           LevelDescrInterface* level_descrs,
           std::mt19937_64& async_gen,
-          std::vector<T>& data,
-          std::vector<T>& tmp_data,
+          std::vector<T, Allocator>& data,
+          std::vector<T, Allocator>& tmp_data,
           size_t n,
           size_t sync_gen_seed,
           const RBC::Comm& comm) :
@@ -185,8 +186,8 @@ class AmsData {
   LevelDescrInterface* level_descrs;
   std::mt19937_64& async_gen;
   std::mt19937_64 sync_gen;
-  std::vector<T>& data;
-  std::vector<T>& tmp_data;
+  std::vector<T, Allocator>& data;
+  std::vector<T, Allocator>& tmp_data;
 
   // Initialized with local input size.
   size_t residual;

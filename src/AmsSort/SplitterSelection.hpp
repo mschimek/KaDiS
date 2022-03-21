@@ -48,22 +48,22 @@ namespace SplitterSelection {
  * @param loc_samples Local samples which must be sorted.
  * @param num_glob_samples Must be greater than 0 or num_glob_splitters is 0.
  */
-template <class AmsData, class SampleType, class SplitterComp>
-std::vector<SampleType> SplitterSelection(AmsData& ams_data,
+template <class AmsData, class SampleType, class SampleTypeAllocator, class SplitterComp>
+std::vector<SampleType, SampleTypeAllocator> SplitterSelection(AmsData& ams_data,
                                           MPI_Datatype mpi_sample_type,
-                                          const std::vector<SampleType>& loc_samples,
+                                          const std::vector<SampleType, SampleTypeAllocator>& loc_samples,
                                           SplitterComp splitter_comp,
                                           size_t num_glob_samples,
                                           size_t num_glob_splitters,
                                           bool use_two_tree);
 
 namespace _internal {
-template <class SampleType, class RankType>
-std::vector<SampleType> SelectLocalSplittersFromRankedValues(const std::vector<SampleType>& samples,
+template <class SampleType, class RankType, class SampleTypeAllocator>
+std::vector<SampleType, SampleTypeAllocator> SelectLocalSplittersFromRankedValues(const std::vector<SampleType, SampleTypeAllocator>& samples,
                                                              const std::vector<RankType>& ranks,
                                                              size_t num_glob_samples, size_t
                                                              num_glob_splitters) {
-  std::vector<SampleType> loc_splitters;
+  std::vector<SampleType, SampleTypeAllocator> loc_splitters;
 
   const double splitter_dist = static_cast<double>(num_glob_samples) / (num_glob_splitters + 1);
 
@@ -84,8 +84,8 @@ std::vector<SampleType> SelectLocalSplittersFromRankedValues(const std::vector<S
   return loc_splitters;
 }
 
-template <class T, class Comp>
-std::vector<T> Allgathermerge(const std::vector<T>& in,
+template <class T, class Allocator, class Comp>
+std::vector<T, Allocator> Allgathermerge(const std::vector<T, Allocator>& in,
                               size_t tot_size,
                               MPI_Datatype mpi_type, Comp comp,
                               bool use_two_tree, const RBC::Comm& comm) {
@@ -104,10 +104,10 @@ std::vector<T> Allgathermerge(const std::vector<T>& in,
 
   // Return to avoid that in.data() or out.data() is a nullptr.
   if (tot_size == 0) {
-    return std::vector<T>{ };
+    return std::vector<T, Allocator>{ };
   }
 
-  std::vector<T> out(tot_size);
+  std::vector<T, Allocator> out(tot_size);
 
   RBC::Gatherm(in.data(), in.size(), mpi_type, out.data(), out.size(), 0, op, comm);
 
@@ -120,8 +120,8 @@ std::vector<T> Allgathermerge(const std::vector<T>& in,
   return out;
 }
 
-template <class T, class Comp>
-std::vector<T> Allgathermerge(const std::vector<T>& in,
+template <class T, class Allocator, class Comp>
+std::vector<T, Allocator> Allgathermerge(const std::vector<T, Allocator>& in,
                               MPI_Datatype mpi_type, Comp comp,
                               bool use_two_tree, const RBC::Comm& comm) {
   size_t tot_size;
@@ -131,9 +131,9 @@ std::vector<T> Allgathermerge(const std::vector<T>& in,
   return Allgathermerge(in, tot_size, mpi_type, comp, use_two_tree, comm);
 }
 
-template <class AmsData, class SampleType, class SplitterComp>
-std::vector<SampleType> SplitterSelectionFis(MPI_Datatype mpi_sample_type,
-                                             const std::vector<SampleType>& loc_samples,
+template <class AmsData, class SampleType, class SampleTypeAllocator, class SplitterComp>
+std::vector<SampleType, SampleTypeAllocator> SplitterSelectionFis(MPI_Datatype mpi_sample_type,
+                                             const std::vector<SampleType, SampleTypeAllocator>& loc_samples,
                                              SplitterComp splitter_comp,
                                              size_t num_glob_samples,
                                              size_t num_glob_splitters,
@@ -143,8 +143,12 @@ std::vector<SampleType> SplitterSelectionFis(MPI_Datatype mpi_sample_type,
   
   assert(num_glob_splitters > 0);
 
-  std::vector<SampleType> samples;
+  std::vector<SampleType, SampleTypeAllocator> samples;
+  std::vector<SampleType> samples_std_allocator;
+  std::vector<SampleType> loc_samples_std_allocator(loc_samples.size());
+  std::copy(loc_samples.begin(), loc_samples.end(), loc_samples_std_allocator.begin());
   std::vector<size_t> ranks;
+
 
 
   // Create a temporary communicator which ensures that the
@@ -157,10 +161,13 @@ std::vector<SampleType> SplitterSelectionFis(MPI_Datatype mpi_sample_type,
                          comm.getMpiLast(), comm.getStride());
 
   RBC::Comm col_comm;
-  std::tie(samples, ranks, col_comm) =
+  std::tie(samples_std_allocator, ranks, col_comm) =
     RFis::RankRowwise<Tags, SampleType, size_t, decltype(splitter_comp)>(
       mpi_sample_type, Common::getMpiType<size_t>(),
-      loc_samples, splitter_comp, rbc_subcomm);
+      loc_samples_std_allocator, splitter_comp, rbc_subcomm);
+
+  samples.resize(samples_std_allocator.size());
+  std::copy(samples_std_allocator.begin(), samples_std_allocator.end(), samples.begin());
 
   const auto loc_splitters = SelectLocalSplittersFromRankedValues(
     samples, ranks, num_glob_samples,
@@ -171,10 +178,10 @@ std::vector<SampleType> SplitterSelectionFis(MPI_Datatype mpi_sample_type,
 }
 }  // namespace _internal
 
-template <class AmsData, class SampleType, class SplitterComp>
-std::vector<SampleType> SplitterSelection(AmsData& ams_data,
+template <class AmsData, class SampleType, class SampleTypeAllocator, class SplitterComp>
+std::vector<SampleType, SampleTypeAllocator> SplitterSelection(AmsData& ams_data,
                                           MPI_Datatype mpi_sample_type,
-                                          const std::vector<SampleType>& loc_samples,
+                                          const std::vector<SampleType, SampleTypeAllocator>& loc_samples,
                                           SplitterComp splitter_comp,
                                           size_t num_glob_samples,
                                           size_t num_glob_splitters,

@@ -48,8 +48,8 @@
 #include "DistrRange.hpp"
 
 namespace Alltoallv {
-template <class Tracker, class T>
-std::vector<std::pair<T*, T*> > MPIAlltoallvRanges(Tracker& tracker, std::vector<T>& v_send,
+template <class Tracker, class T, class A>
+std::vector<std::pair<T*, T*> > MPIAlltoallvRanges(Tracker& tracker, std::vector<T, A>& v_send,
                                                    const std::vector<int>& sendcounts,
                                                    std::vector<T>& v_recv,
                                                    MPI_Datatype mpi_datatype,
@@ -97,9 +97,9 @@ std::vector<std::pair<T*, T*> > MPIAlltoallvRanges(Tracker& tracker, std::vector
   return ret;
 }
 
-template <class Tracker, class T>
-void MPIAlltoallv(Tracker& tracker, std::vector<T>& v_send, const std::vector<int>& sendcounts,
-                  std::vector<T>& v_recv, MPI_Datatype mpi_datatype, const RBC::Comm& comm) {
+template <class Tracker, class T, class A>
+void MPIAlltoallv(Tracker& tracker, std::vector<T, A>& v_send, const std::vector<int>& sendcounts,
+                  std::vector<T, A>& v_recv, MPI_Datatype mpi_datatype, const RBC::Comm& comm) {
   const size_t size = comm.getSize();
 
   std::vector<int> sdispls(size, 0);
@@ -214,11 +214,11 @@ std::vector<T> OneFactorReorder(const std::vector<T>& msgs, int myrank, int npro
  * receive.
  *
  */
-template <class AmsTag, class Tracker, class T>
+template <class AmsTag, class Tracker, class T, class A>
 void exchangeWithoutRecvSizes(Tracker&& tracker,
-                              const std::vector<T>& v_send,
+                              const std::vector<T, A>& v_send,
                               const DistrRanges& out_msgs,
-                              std::vector<T>& v_recv,
+                              std::vector<T, A>& v_recv,
                               size_t max_incoming_msgs,
                               size_t max_incoming_els,
                               MPI_Datatype mpi_datatype,
@@ -392,10 +392,10 @@ void exchangeWithoutRecvSizes(Tracker&& tracker,
  * equal or larger than the number of elements which we will
  * receive.
  */
-template <class AmsTag, class Tracker, class T>
+template <class AmsTag, class Tracker, class T, class A>
 std::vector<std::pair<T*, T*> >
-exchangeWithoutRecvSizesReturnRanges(Tracker&& tracker, const std::vector<T>& v_send,
-                                     const DistrRanges& out_msgs, std::vector<T>& v_recv,
+exchangeWithoutRecvSizesReturnRanges(Tracker&& tracker, const std::vector<T, A>& v_send,
+                                     const DistrRanges& out_msgs, std::vector<T, A>& v_recv,
                                      size_t max_num_recv_msgs, size_t max_num_recv_els,
                                      MPI_Datatype mpi_datatype, const RBC::Comm& comm) {
   v_recv.resize(max_num_recv_els);
@@ -614,9 +614,9 @@ void storeAndForward(std::vector<Tools::Tuple<int, T> >& data, MPI_Datatype mpi_
   }
 }
 
-template <class AmsTag, class Tracker, class T>
-void exchangeWithRecvSizes(Tracker&& tracker, const std::vector<T>& v_send,
-                           const DistrRanges& out_msgs, std::vector<T>& v_recv,
+template <class AmsTag, class Tracker, class T, class A>
+void exchangeWithRecvSizes(Tracker&& tracker, const std::vector<T, A>& v_send,
+                           const DistrRanges& out_msgs, std::vector<T, A>& v_recv,
                            MPI_Datatype mpi_datatype, const RBC::Comm& comm) {
   // No messages of size zero.
   assert(std::find_if(out_msgs.begin(), out_msgs.end(),
@@ -767,11 +767,11 @@ void exchangeWithRecvSizes(Tracker&& tracker, const std::vector<T>& v_send,
   tracker.receive_volume_c_.add(v_recv.size());
 }
 
-template <class AmsTag, class Tracker, class T> 
+template <class AmsTag, class Tracker, class T, class A> 
 std::vector<std::pair<T*, T*> > exchangeWithRecvSizesReturnRanges(Tracker&& tracker,
-                                                                  const std::vector<T>& v_send,
+                                                                  const std::vector<T, A>& v_send,
                                                                   const DistrRanges& out_msgs,
-                                                                  std::vector<T>& v_recv,
+                                                                  std::vector<T, A>& v_recv,
                                                                   MPI_Datatype mpi_datatype,
                                                                   const RBC::Comm& comm) {
   // No messages of size zero.
@@ -932,9 +932,9 @@ std::vector<std::pair<T*, T*> > exchangeWithRecvSizesReturnRanges(Tracker&& trac
   return recv_ranges;
 }
 
-template <class AmsTag, class Tracker, class T>
-void exchangeWithRecvSizesAndPorts(Tracker&& tracker, const std::vector<T>& v_send,
-                                   const DistrRanges& out_msgs, std::vector<T>& v_recv,
+template <class AmsTag, class Tracker, class T, class A>
+void exchangeWithRecvSizesAndPorts(Tracker&& tracker, const std::vector<T, A>& v_send,
+                                   const DistrRanges& out_msgs, std::vector<T, A>& v_recv,
                                    MPI_Datatype mpi_datatype, const RBC::Comm& comm) {
   // No messages of size zero.
   assert(std::find_if(out_msgs.begin(), out_msgs.end(),

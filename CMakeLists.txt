@@ -37,6 +37,9 @@ add_subdirectory(external/RBC)
 # MPI
 find_package(MPI REQUIRED)
 
+# TBB
+find_package(TBB REQUIRED)
+
 ########################################################
 ## Flags
 ########################################################
@@ -51,6 +54,8 @@ if(NOT MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mcx16")
 endif()
 
 # enable extra warnings on gcc
@@ -115,7 +120,7 @@ file(GLOB KADIS_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
 
 # Build shared library to inherit mpi wrapper from parent targets
 add_library(kadis STATIC ${KADIS_SOURCES})
-target_link_libraries(kadis PUBLIC rbc tlx MPI::MPI_CXX)
+target_link_libraries(kadis PUBLIC rbc tlx MPI::MPI_CXX atomic TBB::tbb)
 
 target_include_directories(kadis PUBLIC ${KADIS_INCLUDES})
 

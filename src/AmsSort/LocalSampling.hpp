@@ -37,15 +37,15 @@
 
 namespace Ams {
 namespace _internal {
-template <class T>
-std::vector<T> sampleUniform(const std::vector<T>& loc_data,
+template <class T, class A>
+std::vector<T, A> sampleUniform(const std::vector<T, A>& loc_data,
                              size_t sample_cnt,
                              std::mt19937_64& async_gen) {
   if (loc_data.empty()) {
-    return std::vector<T>();
+    return std::vector<T, A>();
   }
 
-  std::vector<T> samples;
+  std::vector<T, A> samples;
   samples.reserve(sample_cnt);
 
   std::uniform_int_distribution<size_t> distr(0, loc_data.size() - 1);
@@ -57,18 +57,18 @@ std::vector<T> sampleUniform(const std::vector<T>& loc_data,
   return samples;
 }
 
-template <class T>
-std::vector<T> sampleUniform(const std::vector<T>& loc_data,
+template <class T, class A>
+std::vector<T, A> sampleUniform(const std::vector<T, A>& loc_data,
                              size_t range,
                              size_t sample_cnt,
                              std::mt19937_64& async_gen) {
   assert(range >= loc_data.size());
 
   if (loc_data.empty()) {
-    return std::vector<T>();
+    return std::vector<T, A>();
   }
 
-  std::vector<T> samples;
+  std::vector<T, A> samples;
   samples.reserve(sample_cnt);
 
   std::uniform_int_distribution<size_t> distr(0, range - 1);
