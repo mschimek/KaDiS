@@ -66,7 +66,7 @@
 
 namespace Ams {
 namespace _internal {
-bool testAllElementsAssigned(std::vector<size_t> loc_group_el_cnts,
+inline bool testAllElementsAssigned(std::vector<size_t> loc_group_el_cnts,
                              size_t size) {
   const size_t assigned_el_cnt =
       std::accumulate(loc_group_el_cnts.begin(), loc_group_el_cnts.end(), 0,
@@ -85,7 +85,7 @@ bool testAllElementsAssigned(std::vector<size_t> loc_group_el_cnts,
   return succ;
 }
 
-bool verifySendDescription(size_t size, const DistrRanges& distr_ranges) {
+inline bool verifySendDescription(size_t size, const DistrRanges& distr_ranges) {
   std::vector<bool> bitset(size, false);
 
   bool succ = true;
