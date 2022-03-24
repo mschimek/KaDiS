@@ -308,7 +308,7 @@ class RecDescrKways : public LevelDescrInterface {
   std::vector<size_t> my_group_ranks_;
 };
 
-size_t totalNumElements(size_t loc_el_cnt, const RBC::Comm& comm) {
+inline size_t totalNumElements(size_t loc_el_cnt, const RBC::Comm& comm) {
   size_t glob_el_cnt = 0;
   RBC::Allreduce(&loc_el_cnt, &glob_el_cnt, 1, Common::getMpiType(loc_el_cnt),
                  MPI_SUM, comm);
@@ -600,21 +600,21 @@ std::vector<size_t> partitionInplaceWithEqualBuckets(AmsData& ams_data,
 
   *use_equal_buckets = true;
 
-  const size_t bucket_cnt = 2 * splitters.size() + 1;
-  std::vector<size_t> bucket_sizes(bucket_cnt);
-  ips2pa::partition(ams_data.data.begin(), ams_data.data.end(),
-                    splitters.begin(), splitters.end(), bucket_sizes.data(),
-                    *use_equal_buckets, ams_data.comp, ams_data.async_gen());
+  //const size_t bucket_cnt = 2 * splitters.size() + 1;
+  //std::vector<size_t> bucket_sizes(bucket_cnt);
+  //ips2pa::partition(ams_data.data.begin(), ams_data.data.end(),
+  //                  splitters.begin(), splitters.end(), bucket_sizes.data(),
+  //                  *use_equal_buckets, ams_data.comp, ams_data.async_gen());
   auto bucket_sizes2 = partition_(ams_data, splitters, *use_equal_buckets);
-  for (std::size_t i = 0; i < bucket_sizes2.size(); ++i) {
-    if (bucket_sizes[i] != bucket_sizes2[i]) {
-      std::cout << i << std::endl;
-      std::abort();
-    }
-  }
+  //for (std::size_t i = 0; i < bucket_sizes2.size(); ++i) {
+  //  if (bucket_sizes[i] != bucket_sizes2[i]) {
+  //    std::cout << i << std::endl;
+  //    std::abort();
+  //  }
+  //}
   ams_data.config.tracker.partition_t.stop();
 
-  return bucket_sizes;
+  return bucket_sizes2;
 }
 
 // Returns number of elements in each partition.
@@ -683,22 +683,22 @@ std::vector<size_t> partitionInplaceWithoutEqualBuckets(
 
   *use_equal_buckets = false;
 
-  const size_t bucket_cnt = splitters.size() + 1;
-  std::vector<size_t> bucket_sizes(bucket_cnt);
-  ips2pa::partition(ams_data.data.begin(), ams_data.data.end(),
-                    splitters.begin(), splitters.end(), bucket_sizes.data(),
-                    *use_equal_buckets, ams_data.comp, ams_data.async_gen());
+  //const size_t bucket_cnt = splitters.size() + 1;
+  //std::vector<size_t> bucket_sizes(bucket_cnt);
+  //ips2pa::partition(ams_data.data.begin(), ams_data.data.end(),
+  //                  splitters.begin(), splitters.end(), bucket_sizes.data(),
+  //                  *use_equal_buckets, ams_data.comp, ams_data.async_gen());
   auto bucket_sizes2 = partition_(ams_data, splitters, *use_equal_buckets);
-  for (std::size_t i = 0; i < bucket_sizes2.size(); ++i) {
-    if (bucket_sizes[i] != bucket_sizes2[i]) {
-      std::cout << i << std::endl;
-      std::abort();
-    }
-  }
+  //for (std::size_t i = 0; i < bucket_sizes2.size(); ++i) {
+  //  if (bucket_sizes[i] != bucket_sizes2[i]) {
+  //    std::cout << i << std::endl;
+  //    std::abort();
+  //  }
+  //}
 
   ams_data.config.tracker.partition_t.stop();
 
-  return bucket_sizes;
+  return bucket_sizes2;
 }
 
 template <class AmsData>
