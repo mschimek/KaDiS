@@ -724,7 +724,7 @@ void mpiMaxSum(PairType* in, PairType* inout, int* len,
   }
 }
 
-double calcLevelEpsilon(size_t level, size_t total_level, size_t np_init,
+inline double calcLevelEpsilon(size_t level, size_t total_level, size_t np_init,
                         size_t np_act, double init_eps) {
   // Average epsilon per level to guarantee final imbalance of
   // 1 + init_eps.
@@ -743,7 +743,7 @@ double calcLevelEpsilon(size_t level, size_t total_level, size_t np_init,
   return eps;
 }
 
-std::pair<size_t, size_t> calcNumSplittersSamples(size_t init_nprocs, size_t k,
+inline std::pair<size_t, size_t> calcNumSplittersSamples(size_t init_nprocs, size_t k,
                                                   double eps) {
   assert(init_nprocs > 0);
 
