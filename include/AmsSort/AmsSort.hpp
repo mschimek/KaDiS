@@ -387,8 +387,8 @@ void sortTracker(MPI_Datatype mpi_type, std::vector<T>& data,
                  bool use_ips4o = true,
                  bool use_two_tree = true);
 
-template <class T, class Tracker, class Comp = std::less<> , class AmsTags = Ams::Tags<> >
-void sortTrackerLevel(MPI_Datatype mpi_type, std::vector<T>& data, int l,
+template <class T, class A, class Tracker, class Comp = std::less<> , class AmsTags = Ams::Tags<> >
+void sortTrackerLevel(MPI_Datatype mpi_type, std::vector<T, A>& data, int l,
                       std::mt19937_64& async_gen,
                       Tracker& tracker,
                       const RBC::Comm& comm,
@@ -433,8 +433,8 @@ void sortTracker(MPI_Datatype mpi_type, std::vector<T>& data,
                  bool use_ips4o = true,
                  bool use_two_tree = true);
 
-template <class T, class Tracker, class Comp = std::less<> , class AmsTags = Ams::Tags<> >
-void sortTrackerLevel(MPI_Datatype mpi_type, std::vector<T>& data, int l,
+template <class T, class A, class Tracker, class Comp = std::less<> , class AmsTags = Ams::Tags<> >
+void sortTrackerLevel(MPI_Datatype mpi_type, std::vector<T, A>& data, int l,
                       std::mt19937_64& async_gen,
                       Tracker& tracker,
                       MPI_Comm comm,

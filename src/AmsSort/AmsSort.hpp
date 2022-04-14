@@ -1158,8 +1158,8 @@ void sort(MPI_Datatype mpi_type, std::vector<T>& data, std::vector<size_t>& ks,
                            data);
 }
 
-template <class T, class Tracker, class Comp, class AmsTags>
-void sortTrackerLevel(MPI_Datatype mpi_type, std::vector<T>& data, int l,
+template <class T, class A, class Tracker, class Comp, class AmsTags>
+void sortTrackerLevel(MPI_Datatype mpi_type, std::vector<T, A>& data, int l,
                       std::mt19937_64& async_gen, Tracker& tracker,
                       const RBC::Comm& comm, Comp comp, double imbalance,
                       bool use_dma, PartitioningStrategy part_strategy,
@@ -1255,8 +1255,8 @@ void sort(MPI_Datatype mpi_type, std::vector<T>& data, std::vector<size_t>& ks,
                          use_two_tree);
 }
 
-template <class T, class Tracker, class Comp, class AmsTags>
-void sortTrackerLevel(MPI_Datatype mpi_type, std::vector<T>& data, int l,
+template <class T, class A, class Tracker, class Comp, class AmsTags>
+void sortTrackerLevel(MPI_Datatype mpi_type, std::vector<T, A>& data, int l,
                       std::mt19937_64& async_gen, Tracker& tracker,
                       MPI_Comm comm, Comp comp, double imbalance, bool use_dma,
                       PartitioningStrategy part_strategy,
@@ -1265,7 +1265,7 @@ void sortTrackerLevel(MPI_Datatype mpi_type, std::vector<T>& data, int l,
   RBC::Comm rcomm;
   RBC::Create_Comm_from_MPI(comm, &rcomm);
 
-  sortTrackerLevel<T, Tracker, Comp, AmsTags>(
+  sortTrackerLevel<T, A, Tracker, Comp, AmsTags>(
       mpi_type, data, l, async_gen, tracker, rcomm, comp, imbalance, use_dma,
       part_strategy, distr_strategy, use_ips4o, use_two_tree);
 }
