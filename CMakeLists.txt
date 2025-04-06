@@ -97,7 +97,7 @@ endif()
 # kadis library
 
 file(GLOB KADIS_INCLUDES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-  external/ips4o
+  #external/ips4o
   external/ips2pa
   include
   )
@@ -115,7 +115,7 @@ file(GLOB KADIS_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
 
 # Build shared library to inherit mpi wrapper from parent targets
 add_library(kadis STATIC ${KADIS_SOURCES})
-target_link_libraries(kadis PUBLIC rbc tlx MPI::MPI_CXX)
+target_link_libraries(kadis PUBLIC rbc tlx MPI::MPI_CXX ips4o)
 
 target_include_directories(kadis PUBLIC ${KADIS_INCLUDES})
 
