@@ -1,8 +1,11 @@
-cmake_minimum_required(VERSION 3.9.4)
+cmake_minimum_required(VERSION 3.23)
 
 project(KaDiS)
 
+
 set(KaDiS_VERSION "0.1.0")
+
+include(FetchContent)
 
 # prohibit in-source builds
 if("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
@@ -32,7 +35,13 @@ endif()
 ########################################################
 
 # RBC
-add_subdirectory(external/RBC)
+FetchContent_Declare(
+  rbc
+  GIT_REPOSITORY git@github.com:mschimek/RBC.git
+  GIT_TAG e5556a3
+  SYSTEM)
+
+FetchContent_MakeAvailable(rbc)
 
 # MPI
 find_package(MPI REQUIRED)
