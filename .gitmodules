@@ -6,4 +6,4 @@
 	url = https://github.com/MichaelAxtmann/RBC.git
 [submodule "external/ips2pa"]
 	path = external/ips2pa
-	url = git@github.com:MichaelAxtmann/ips2pa.git
+	url = https://github.com/MichaelAxtmann/ips2pa.git
