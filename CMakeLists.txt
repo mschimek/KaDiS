@@ -37,7 +37,7 @@ endif()
 # RBC
 FetchContent_Declare(
   rbc
-  GIT_REPOSITORY git@github.com:mschimek/RBC.git
+  GIT_REPOSITORY https://github.com/mschimek/RBC.git
   GIT_TAG e5556a3
   SYSTEM)
 
