@@ -60,7 +60,7 @@
 
 namespace Ams {
 namespace _internal {
-bool testAllElementsAssigned(std::vector<size_t> loc_group_el_cnts,
+inline bool testAllElementsAssigned(std::vector<size_t> loc_group_el_cnts,
                              size_t size) {
   const size_t assigned_el_cnt = std::accumulate(loc_group_el_cnts.begin(),
                                                  loc_group_el_cnts.end(),
@@ -80,7 +80,7 @@ bool testAllElementsAssigned(std::vector<size_t> loc_group_el_cnts,
   return succ;
 }
 
-bool verifySendDescription(size_t size,
+inline bool verifySendDescription(size_t size,
                            const DistrRanges& distr_ranges) {
   std::vector<bool> bitset(size, false);
 
@@ -326,7 +326,7 @@ class RecDescrKways : public LevelDescrInterface {
   std::vector<size_t> my_group_ranks_;
 };
 
-size_t totalNumElements(size_t loc_el_cnt, const RBC::Comm& comm) {
+inline size_t totalNumElements(size_t loc_el_cnt, const RBC::Comm& comm) {
   size_t glob_el_cnt = 0;
   RBC::Allreduce(&loc_el_cnt, &glob_el_cnt, 1, Common::getMpiType(loc_el_cnt), MPI_SUM, comm);
   return glob_el_cnt;
@@ -541,7 +541,7 @@ void mpiMaxSum(PairType* in,
 }
 
 
-double calcLevelEpsilon(size_t level, size_t total_level,
+inline double calcLevelEpsilon(size_t level, size_t total_level,
                         size_t np_init, size_t np_act, double init_eps) {
   // Average epsilon per level to guarantee final imbalance of
   // 1 + init_eps.
@@ -560,7 +560,7 @@ double calcLevelEpsilon(size_t level, size_t total_level,
   return eps;
 }
 
-std::pair<size_t, size_t> calcNumSplittersSamples(size_t init_nprocs, size_t k, double eps) {
+inline std::pair<size_t, size_t> calcNumSplittersSamples(size_t init_nprocs, size_t k, double eps) {
   assert(init_nprocs > 0);
 
   // Overpartitioning ratio (variable b in paper)
